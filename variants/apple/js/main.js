@@ -28,11 +28,11 @@
   textNodes.forEach(node=>{
    const fragment=document.createDocumentFragment();
    [...node.textContent].forEach(char=>{
-    if(/\\s/.test(char)){fragment.appendChild(document.createTextNode(char));return}
+    if(/\s/.test(char)){fragment.appendChild(document.createTextNode(char));return}
     const span=document.createElement('span');
     span.className='color-letter';
     span.textContent=char;
-    const hue=(glyphIndex/Math.max(1,[...heroTitle.textContent.replace(/\\s/g,'')].length-1))*300;
+    const hue=(glyphIndex/Math.max(1,[...heroTitle.textContent.replace(/\s/g,'')].length-1))*300;
     span.style.setProperty('--letter-color','hsl('+hue+' 88% 55%)');
     glyphIndex++;
     fragment.appendChild(span);
