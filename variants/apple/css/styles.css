@@ -39,6 +39,7 @@ footer{background:#f5f5f7;padding:34px 0 24px}.footer-inner,.footer-bottom{displ
 
 
 /* Cursor-reactive spectrum typography */
-.color-letter{display:inline-block;color:inherit;transition:color 1s cubic-bezier(.2,.75,.2,1);will-change:color}
+.color-letter{display:inline-block;color:inherit;transition:color .12s ease-out;will-change:color}
 .color-letter.is-lit{color:var(--letter-color,#585cff)}
-@media(hover:none),(pointer:coarse){.color-letter{transition-duration:.75s}}
+.color-letter.is-fading{transition:color .95s cubic-bezier(.2,.75,.2,1)}
+@media(hover:none),(pointer:coarse){.color-letter{transition:none}}
