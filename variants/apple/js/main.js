@@ -17,11 +17,12 @@
   window.location.href='mailto:'+email+'?subject='+subject+'&body='+body;
   status.textContent='Открываю почтовую программу. Если письмо не открылось, напишите напрямую.';
  });
- // Rainbow letter trail: each glyph lights up under the pointer, then softly returns to black.
+ // Cursor-reactive spectrum: glyphs light up on contact, hold briefly, then fade softly.
  const heroTitle=document.querySelector('.hero h1');
  if(heroTitle && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   let glyphIndex=0;
   const letters=[];
+  const total=[...heroTitle.textContent.replace(/\s/g,'')].length;
   const walker=document.createTreeWalker(heroTitle,NodeFilter.SHOW_TEXT);
   const textNodes=[];
   while(walker.nextNode())textNodes.push(walker.currentNode);
@@ -32,7 +33,7 @@
     const span=document.createElement('span');
     span.className='color-letter';
     span.textContent=char;
-    const hue=(glyphIndex/Math.max(1,[...heroTitle.textContent.replace(/\s/g,'')].length-1))*300;
+    const hue=190+(glyphIndex/Math.max(1,total-1))*260;
     span.style.setProperty('--letter-color','hsl('+hue+' 88% 55%)');
     glyphIndex++;
     fragment.appendChild(span);
@@ -41,17 +42,32 @@
    node.parentNode.replaceChild(fragment,node);
   });
   const timers=new WeakMap();
+  const fadeTimers=new WeakMap();
   heroTitle.addEventListener('pointermove',event=>{
    if(event.pointerType==='touch')return;
    const x=event.clientX,y=event.clientY;
    letters.forEach(letter=>{
     const rect=letter.getBoundingClientRect();
     const dx=x-(rect.left+rect.width/2),dy=y-(rect.top+rect.height/2);
-    if(Math.hypot(dx,dy)<Math.max(25,rect.width*.8)){
-     letter.classList.add('is-lit');
+    if(Math.hypot(dx,dy)<Math.max(24,rect.width*.75)){
      clearTimeout(timers.get(letter));
-     timers.set(letter,setTimeout(()=>letter.classList.remove('is-lit'),120));
+     clearTimeout(fadeTimers.get(letter));
+     letter.classList.remove('is-fading');
+     letter.classList.add('is-lit');
+     timers.set(letter,setTimeout(()=>{
+      letter.classList.remove('is-lit');
+      letter.classList.add('is-fading');
+      fadeTimers.set(letter,setTimeout(()=>letter.classList.remove('is-fading'),950));
+     },1000));
     }
+   });
+  });
+  heroTitle.addEventListener('pointerleave',()=>{
+   letters.forEach(letter=>{
+    clearTimeout(timers.get(letter));
+    letter.classList.remove('is-lit');
+    letter.classList.add('is-fading');
+    fadeTimers.set(letter,setTimeout(()=>letter.classList.remove('is-fading'),950));
    });
   });
  }
